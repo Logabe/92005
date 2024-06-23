@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import threading
 
 from django.shortcuts import render
 from django.http import HttpRequest
@@ -6,16 +7,14 @@ from django.http.response import HttpResponseRedirect, HttpResponseForbidden, Ht
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
 from django.conf import settings
-
+from django.template import Context
+from django.template.engine import Engine
 from .models import Library, Book, Request
 from .forms import RegisterBookForm
 from .utils import get_or_none, related_books
 import requests
 import json
-import asyncio
-from asgiref.sync import sync_to_async
 
 def index(request):
     context = {
@@ -104,15 +103,14 @@ def delete_book(request: HttpRequest, book_id):
     else:
         return HttpResponseForbidden()
 
+email_template = Engine.get_default().get_template(template_name="minilibraries/email.txt")
+
 @require_POST
 @login_required
 def request_book(request: HttpRequest, book_id):
     def email(user, book):
-        message = f"""Hello {book.owner.first_name},
-        {user.get_full_name()} ({user.get_username()}) has requested your copy of {book.title}
-        Their email is: {user.email}"""
-
-        book.owner.email_user("Request for " + book.title, message, "logangbentley@gmail.com")
+        context = Context({"user": user, "book": book})
+        book.owner.email_user("Request for " + book.title, email_template.render(context=context), "logangbentley@gmail.com")
 
     book = Book.objects.get(id=book_id)
     if related_books(request.user).contains(book):
@@ -121,7 +119,8 @@ def request_book(request: HttpRequest, book_id):
                 return HttpResponseForbidden("Already requested/borrowed")
             else:
                 Request(user = request.user, book = book, date=datetime.now()).save()
-                asyncio.run(asyncio.coroutine(email(request.user, book)))
+                email_thread = threading.Thread(target=email, name="Email Thread", args=(request.user, book))
+                email_thread.start()
                 return HttpResponse("Request successful")
         else:
             return HttpResponseForbidden(f"Too many books/requests out (limit: {settings.BORROW_LIMIT})")

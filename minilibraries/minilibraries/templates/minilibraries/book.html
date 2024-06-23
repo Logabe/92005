@@ -16,30 +16,6 @@
     </form>
     {% endif %}
     {% endif %}
-
-    {% if is_owner %}
-    <button onclick="deleteBook()" class="button">Delete Book</button>
-    <script>
-        function closeNow() {
-            window.close();
-        }
-        function deleteBook() {
-            if (!confirm("Delete this book?")) {
-                return;
-            }
-
-            // Construct a FormData instance
-            const formData = new FormData();
-            formData.append("book_id", "{{id}}");
-            formData.append("csrfmiddlewaretoken", "{{ csrf_token }}")
-
-            const req = new XMLHttpRequest();
-            req.addEventListener("load", closeNow);
-            req.open("POST", "{% url 'delete_book' id %}");
-            req.send(formData);
-        }
-    </script>
-    {% endif %}
 </div>
 <span>{{owner}}'s copy of</span>
 <h1>{{title}}</h1>
