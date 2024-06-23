@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Hello</h2>
+<p>Welcome!</p>
+<div class="stats">
+    The stats so far:
+    <span class="stat"><span class="number">{{user_count}}</span> people using Mini Libraries</span>
+    <span class="stat"><span class="number">{{library_count}}</span> libraries created</span>
+    <span class="stat"><span class="number">{{book_count}}</span> books registered</span></div>
+<h2>How it works:</h2>
+<ol>
+    <li><h3>Join a library</h3><p>At present, there's only one library available (this is only a prototype)</p></li>
+    <li><h3>Register your books</h3><p>You can register your copy of a book by using it's ISBN (usually found on the back of the book)</p></li>
+    <li><h3>Borrow and share</h3><p>You now have access to the collection of everyone else in your libraries. You can request any book you find on the website, and organise transfer with the owner. Once you're done, return the book to it's owner and mark the book as being returned.</p></li>
+</ol>
+{% endblock %}

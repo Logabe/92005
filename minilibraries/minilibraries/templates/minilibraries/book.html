@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+<div class="left-pane">
+    <img src="https://covers.openlibrary.org/b/isbn/{{isbn}}-M.jpg">
+    {% if has_book %}
+    <button onclick="sendReq(&quot;{% url 'return_book' id %}&quot;)" class="button">Return Book</button>
+    {% else %}
+    {% if not request %}
+    <button onclick="sendReq(&quot;{% url 'request_book' id %}&quot;)" class="button">Request Book</button>
+    {% else %}
+    <form action="{% url 'cancel_request' %}" method="POST">
+        {% csrf_token %}
+        <input type="number" name="request_id" value="{{request.pk}}" hidden>
+        <input type="submit" value="Cancel Request" class="button">
+    </form>
+    {% endif %}
+    {% endif %}
+
+    {% if is_owner %}
+    <button onclick="deleteBook()" class="button">Delete Book</button>
+    <script>
+        function closeNow() {
+            window.close();
+        }
+        function deleteBook() {
+            if (!confirm("Delete this book?")) {
+                return;
+            }
+
+            // Construct a FormData instance
+            const formData = new FormData();
+            formData.append("book_id", "{{id}}");
+            formData.append("csrfmiddlewaretoken", "{{ csrf_token }}")
+
+            const req = new XMLHttpRequest();
+            req.addEventListener("load", closeNow);
+            req.open("POST", "{% url 'delete_book' id %}");
+            req.send(formData);
+        }
+    </script>
+    {% endif %}
+</div>
+<span>{{owner}}'s copy of</span>
+<h1>{{title}}</h1>
+<p>{{desc}}</p>
+
+<script>
+    var formData = new FormData();
+    formData.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+    const context = {method: "POST", body: formData};
+    function sendReq(url) {
+        fetch(url, context)
+            .then((response) => response.text())
+            .then((text) => alert(text));
+    }
+</script>
+{% endblock %}
