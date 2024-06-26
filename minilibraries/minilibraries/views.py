@@ -60,22 +60,30 @@ def book(request: HttpRequest, book_id):
             "id": book_id,
             "desc": desc,
             "has_book": book.borrower == request.user,
-            "request": get_or_none(Request, book_id=book_id, user=request.user),
+            "book_request": get_or_none(Request, book_id=book_id, user=request.user),
             "is_owner": book.owner == request.user
         }
         return render(request, "minilibraries/book.html", context)
     else:
         return HttpResponseForbidden()
 
+
+def books(request: HttpRequest):
+    return books_page(request, 0)
+
 @login_required
 @require_GET
-def books(request: HttpRequest):
+def books_page(request: HttpRequest, page: int):
     form = RegisterBookForm()
-    #
-    books = related_books(request.user)[:20]
+    start = page * 20
+    end = start + 20
+
+    books = related_books(request.user)[start:end]
     context = {
         "form": form,
-        "books": books
+        "books": books,
+        "page": page,
+        "is_more": end < Book.objects.count()
     }
     return render(request, "minilibraries/books.html", context)
 

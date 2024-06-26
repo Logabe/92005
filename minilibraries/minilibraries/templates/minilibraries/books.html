@@ -6,6 +6,14 @@
 <div class="page-center">
     <h2>Books</h2>
     <button id="reg-button">Register Book</button>
+    <div id="nav">
+        {% if page > 0 %}
+        <a class="nav-button" href="{% url 'books' page|add:"-1" %}" style="mrgin-right: 50%;">&lt;</a>
+        {% endif %}
+        {% if is_more %}
+        <a class="nav-button" href="{% url 'books' page|add:1%}" style="position: absolute;top: 0px;right: 0px;">&gt;</a>
+        {% endif %}
+    </div>
     <div id="books-container">
         {% for book in books %}
             <div class="book">
@@ -16,7 +24,7 @@
     </div>
 </div>
 <dialog id="reg-modal">
-    <h1>hi</h1>
+    <h1>Register Book</h1>
     <form action="/book/add" method="post" class="form">
         {% csrf_token %}
         {{ form }}

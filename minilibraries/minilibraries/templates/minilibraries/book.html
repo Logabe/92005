@@ -6,12 +6,12 @@
     {% if has_book %}
     <button onclick="sendReq(&quot;{% url 'return_book' id %}&quot;)" class="button">Return Book</button>
     {% else %}
-    {% if not request %}
+    {% if not book_request %}
     <button onclick="sendReq(&quot;{% url 'request_book' id %}&quot;)" class="button">Request Book</button>
     {% else %}
     <form action="{% url 'cancel_request' %}" method="POST">
         {% csrf_token %}
-        <input type="number" name="request_id" value="{{request.pk}}" hidden>
+        <input type="number" name="request_id" value="{{book_request.pk}}" hidden>
         <input type="submit" value="Cancel Request" class="button">
     </form>
     {% endif %}

@@ -25,10 +25,10 @@
   2. Use OLID to get cover, summary
 7. Create user login/registration page
 8. Implement borrowing system
--- VVV HERE VVV --
 9. Create proper home page
   1. Use CSS Grid to create page layout
   2. Use Flexbox to make book rows
+-- VVV HERE VVV --
 10. Finalise website templates & CSS design (make it look nice)
   1. Create index page (not home)
 11. Test, Test, Test - Break EVERYTHING while you can
