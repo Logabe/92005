@@ -68,6 +68,10 @@ footer #copyright {
     text-align: center;
 }
 
+.footer-links a:any-link {
+    color: white;
+}
+
 /* Index Page */
 .stats {
     flex-direction: row;
