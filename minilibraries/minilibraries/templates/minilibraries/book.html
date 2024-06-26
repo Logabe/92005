@@ -16,6 +16,10 @@
     </form>
     {% endif %}
     {% endif %}
+    <br>
+    {% if request_count != 0 %}
+    {{request_count}} request(s)
+    {% endif %}
 </div>
 <span>{{owner}}'s copy of</span>
 <h1>{{title}}</h1>

@@ -61,6 +61,7 @@ def book(request: HttpRequest, book_id):
             "desc": desc,
             "has_book": book.borrower == request.user,
             "book_request": get_or_none(Request, book_id=book_id, user=request.user),
+            "request_count": Request.objects.filter(book=book).exclude(user=request.user).count(),
             "is_owner": book.owner == request.user
         }
         return render(request, "minilibraries/book.html", context)
