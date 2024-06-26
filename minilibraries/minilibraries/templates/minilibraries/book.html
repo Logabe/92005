@@ -17,6 +17,9 @@
     {% endif %}
     {% endif %}
     <br>
+    {% if book.borrower and book.borrower != request.user %}
+    Book is currently on loan<br>
+    {% endif %}
     {% if request_count != 0 %}
     {{request_count}} request(s)
     {% endif %}
