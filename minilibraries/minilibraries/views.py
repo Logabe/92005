@@ -114,13 +114,15 @@ def delete_book(request: HttpRequest, book_id):
         return HttpResponseForbidden()
 
 email_template = Engine.get_default().get_template(template_name="minilibraries/email.txt")
+alternative_email = Engine.get_default().get_template(template_name="minilibraries/additional_email.txt")
 
 @require_POST
 @login_required
 def request_book(request: HttpRequest, book_id):
     def email(user, book):
         context = Context({"user": user, "book": book})
-        book.owner.email_user("Request for " + book.title, email_template.render(context=context), "logangbentley@gmail.com")
+        template = email_template if not book.borrower else alternative_email
+        book.owner.email_user("Request for " + book.title, template.render(context=context), "logangbentley@gmail.com")
 
     book = Book.objects.get(id=book_id)
     if related_books(request.user).contains(book):
