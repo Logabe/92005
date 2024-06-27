@@ -119,9 +119,11 @@ alternative_email = Engine.get_default().get_template(template_name="minilibrari
 @require_POST
 @login_required
 def request_book(request: HttpRequest, book_id):
-    def email(user, book):
-        context = Context({"user": user, "book": book})
-        template = email_template if not book.borrower else alternative_email
+    def email(user, book: Book):
+        borrower = book.borrower.get_full_name() if book.borrower else Request.objects.filter(book=book).latest('-date').user.get_full_name()
+        print(borrower)
+        context = Context({"user": user, "book": book, "borrower": borrower})
+        template = alternative_email if book.borrower or Request.objects.filter(book=book).count() >= 1 else email_template
         book.owner.email_user("Request for " + book.title, template.render(context=context), "logangbentley@gmail.com")
 
     book = Book.objects.get(id=book_id)
