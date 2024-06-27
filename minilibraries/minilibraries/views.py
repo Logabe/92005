@@ -159,13 +159,16 @@ def return_book(request: HttpRequest, book_id):
 def fulfill_request(request: HttpRequest):
     book_request = Request.objects.get(pk=request.POST["request_id"])
     book = book_request.book
+    if Request.objects.filter(book=book).latest('-date') != book_request:
+        return HttpResponseForbidden("Not the first request ")
+
     if request.user.id == book.owner.id:
         book.borrower = request.user
         book.save()
         book_request.delete()
         return HttpResponse("does anyone even read these")
     else:
-        return HttpResponseForbidden()
+        return HttpResponseForbidden("Not the owner")
 
 @require_POST
 @login_required
