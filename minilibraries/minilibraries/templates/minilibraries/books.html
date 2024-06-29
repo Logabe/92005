@@ -25,7 +25,7 @@
 </div>
 <dialog id="reg-modal">
     <h1>Register Book</h1>
-    <form action="/book/add" method="post" class="form">
+    <form class="form" id="reg">
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Submit">
@@ -36,6 +36,8 @@
     const reg_button = document.getElementById("reg-button");
     const reg_modal = document.getElementById("reg-modal");
     const reg_exit = document.getElementById("reg-exit");
+    const form = document.getElementById("reg");
+    const validation = /[^0-9]/g;
 
     reg_button.addEventListener("click", () => {
         reg_modal.showModal();
@@ -43,6 +45,24 @@
 
     reg_exit.addEventListener("click", () => {
         reg_modal.close();
+    });
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let formData = new FormData(document.forms['reg']);
+        let isbn = formData.get('isbn');
+        let validated = isbn.replaceAll(validation, "")
+        console.log(validated);
+        formData.set('isbn', validated);
+
+        const context = {method: "POST", body: formData};
+        fetch('/book/add', context)
+            .then((response) => response.json())
+            .then((json) => {
+                //console.log(json);
+                //alert("Registered "+ json[0].fields.title);
+                alert("Registered book!");
+            });
     });
 </script>
 {% endblock %}

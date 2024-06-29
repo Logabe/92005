@@ -3,7 +3,7 @@ import threading
 
 from django.shortcuts import render
 from django.http import HttpRequest
-from django.http.response import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -14,7 +14,6 @@ from .models import Library, Book, Request
 from .forms import RegisterBookForm
 from .utils import get_or_none, related_books
 import requests
-import json
 
 def index(request):
     context = {
@@ -99,7 +98,8 @@ def register_book(request: HttpRequest):
 
     book = Book(owner = request.user, olid=olid, title=title, isbn = isbn, date_added=date)
     book.save()
-    return HttpResponseRedirect("/books")
+    print(isbn)
+    return JsonResponse(book)
 
 @require_POST
 @login_required
