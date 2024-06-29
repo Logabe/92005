@@ -6,3 +6,6 @@ minilibraries/db.sqlite3
 
 #Secret key
 minilibraries/keys/
+
+
+venv/
