@@ -3,7 +3,7 @@ import threading
 
 from django.shortcuts import render
 from django.http import HttpRequest
-from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse, HttpResponseNotFound
+from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse, HttpResponseNotFound, HttpResponseServerError
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -95,16 +95,21 @@ def books_page(request: HttpRequest, page: int):
 @require_POST
 @login_required
 def register_book(request: HttpRequest):
-    isbn = request.POST["isbn"]
-    r = requests.get(f'http://openlibrary.org/api/volumes/brief/isbn/{isbn}.json')
-    book_data = r.json()["records"][list(r.json()["records"])[0]]
-    olid = book_data["olids"][0]
-    title = book_data["data"]["title"]
-    date = datetime.now()
+    try:
+        isbn = request.POST["isbn"]
+        r = requests.get(f'http://openlibrary.org/api/volumes/brief/isbn/{isbn}.json')
+        book_data = r.json()["records"][list(r.json()["records"])[0]]
+        olid = book_data["olids"][0]
+        title = book_data["data"]["title"]
+        date = datetime.now()
 
-    book = Book(owner = request.user, olid=olid, title=title, isbn = isbn, date_added=date)
-    book.save()
-    return JsonResponse(serializers.serialize('json', [book]), safe=False)
+        book = Book(owner = request.user, olid=olid, title=title, isbn = isbn, date_added=date)
+        book.save()
+        return JsonResponse(serializers.serialize('json', [book]), safe=False)
+    except Exception as e:
+        return HttpResponseServerError("Could not register book")
+
+
 
 @require_POST
 @login_required
