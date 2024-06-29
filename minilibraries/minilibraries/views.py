@@ -66,6 +66,8 @@ def book(request: HttpRequest, book_id):
             "desc": desc,
             "has_book": book.borrower == request.user,
             "book_request": get_or_none(Request, book_id=book_id, user=request.user),
+            "request_count": Request.objects.filter(book=book).exclude(user=request.user).count(),
+            "taken_out": book.owner,
             "is_owner": book.owner == request.user
         }
         return render(request, "minilibraries/book.html", context)
@@ -139,13 +141,17 @@ def delete_book(request: HttpRequest, book_id):
         return HttpResponseForbidden()
 
 email_template = Engine.get_default().get_template(template_name="minilibraries/email.txt")
+alternative_email = Engine.get_default().get_template(template_name="minilibraries/additional_email.txt")
 
 @require_POST
 @login_required
 def request_book(request: HttpRequest, book_id):
-    def email(user, book):
-        context = Context({"user": user, "book": book})
-        book.owner.email_user("Request for " + book.title, email_template.render(context=context), "logangbentley@gmail.com")
+    def email(user, book: Book):
+        borrower = book.borrower.get_full_name() if book.borrower else Request.objects.filter(book=book).latest('-date').user.get_full_name()
+        print(borrower)
+        context = Context({"user": user, "book": book, "borrower": borrower})
+        template = alternative_email if book.borrower or Request.objects.filter(book=book).count() >= 1 else email_template
+        book.owner.email_user("Request for " + book.title, template.render(context=context), "logangbentley@gmail.com")
 
     book = Book.objects.get(id=book_id)
     if related_books(request.user).contains(book):
@@ -180,13 +186,16 @@ def return_book(request: HttpRequest, book_id):
 def fulfill_request(request: HttpRequest):
     book_request = Request.objects.get(pk=request.POST["request_id"])
     book = book_request.book
+    if Request.objects.filter(book=book).latest('-date') != book_request:
+        return HttpResponseForbidden("Not the first request ")
+
     if request.user.id == book.owner.id:
         book.borrower = request.user
         book.save()
         book_request.delete()
         return HttpResponse("does anyone even read these")
     else:
-        return HttpResponseForbidden()
+        return HttpResponseForbidden("Not the owner")
 
 @require_POST
 @login_required
