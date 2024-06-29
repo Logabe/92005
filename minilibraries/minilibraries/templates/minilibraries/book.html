@@ -16,6 +16,20 @@
     </form>
     {% endif %}
     {% endif %}
+    {% if is_owner %}
+    <button onclick="deleteBook()" class="button">Delete Book</button>
+    <script>
+        function closeNow() {
+            window.close();
+        }
+        function deleteBook() {
+            if (!confirm("Delete this book?")) {
+                return;
+            }
+            sendReq("{% url 'delete_book' id %}");
+        }
+    </script>
+    {%endif%}
 </div>
 <span>{{owner}}'s copy of</span>
 <h1>{{title}}</h1>
