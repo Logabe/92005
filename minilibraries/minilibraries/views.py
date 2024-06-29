@@ -83,10 +83,27 @@ def books_page(request: HttpRequest, page: int):
     start = page * 20
     end = start + 20
 
-    books = related_books(request.user)[start:end]
+    books = related_books(request.user)
+    if "search" in request.GET:
+        books = books.filter(title__icontains=request.GET["search"])
+
+    match request.GET.get("order"):
+        case 'recent':
+            books = books.order_by('-date_added')
+        case 'old':
+            books = books.order_by('date_added')
+        case 'AtoZ':
+            books = books.order_by('title')
+        case 'ZtoA':
+            books = books.order_by('-title')
+        case 'rand':
+            books = books.order_by('?')
+        case _:
+            pass
+
     context = {
         "form": form,
-        "books": books,
+        "books": books[start:end],
         "page": page,
         "is_more": end < Book.objects.count()
     }

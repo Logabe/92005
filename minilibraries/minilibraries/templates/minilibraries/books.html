@@ -3,6 +3,24 @@
 {% block title %}Books{% endblock %}
 
 {% block content %}
+<div class="left-panel">
+    <h3>Search Filters</h3>
+    <form>
+        <input type="search" name="search" placeholder="Title"></input><br>
+        <label for="order">Order</label>
+        <select name="order">
+            <option value="" selected disabled hidden>Choose here</option>
+            <option value="recent">Date added (recent first)</option>
+            <option value="old">Date added (old first)</option>
+            <option value="AtoZ">Alphabetical (Ascending)</option>
+            <option value="ZtoA">Alphabetical (Descending)</option>
+            <option value="rand">Random</option>
+        </select><br>
+
+        <input type="submit" value="Search"></input>
+    </form>
+</div>
+
 <div class="page-center">
     <h2>Books</h2>
     <button id="reg-button">Register Book</button>
