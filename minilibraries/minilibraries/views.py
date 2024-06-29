@@ -3,13 +3,15 @@ import threading
 
 from django.shortcuts import render
 from django.http import HttpRequest
-from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse
+from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse, HttpResponseNotFound
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.template import Context
 from django.template.engine import Engine
+from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from .models import Library, Book, Request
 from .forms import RegisterBookForm
 from .utils import get_or_none, related_books
@@ -41,7 +43,11 @@ def home(request: HttpRequest):
 
 @login_required
 def book(request: HttpRequest, book_id):
-    book = Book.objects.get(id=book_id)
+    try:
+        book = Book.objects.get(id=book_id)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound("This book does not exist!")
+
     if related_books(request.user).contains(book):
         req = requests.get(f'http://openlibrary.org/books/{book.olid}.json').json()
         work_id = req["works"][0]["key"]
@@ -98,8 +104,7 @@ def register_book(request: HttpRequest):
 
     book = Book(owner = request.user, olid=olid, title=title, isbn = isbn, date_added=date)
     book.save()
-    print(isbn)
-    return JsonResponse(book)
+    return JsonResponse(serializers.serialize('json', [book]), safe=False)
 
 @require_POST
 @login_required
