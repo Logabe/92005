@@ -3,3 +3,6 @@ __pycache__/
 
 #Database
 minilibraries/db.sqlite3
+
+#Secret key
+minilibraries/keys/
