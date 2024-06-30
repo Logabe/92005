@@ -3,7 +3,7 @@
 {% block title %}Books{% endblock %}
 
 {% block content %}
-<div class="left-panel">
+<div id="search-panel">
     <h3>Search Filters</h3>
     <form>
         <input type="search" name="search" placeholder="Title"></input><br>
@@ -26,7 +26,7 @@
     <button id="reg-button">Register Book</button>
     <div id="nav">
         {% if page > 0 %}
-        <a class="nav-button" href="{% url 'books' page|add:"-1" %}" style="mrgin-right: 50%;">&lt;</a>
+        <a class="nav-button" href="{% url 'books' page|add:"-1" %}" style="margin-right: 50%;">&lt;</a>
         {% endif %}
         {% if is_more %}
         <a class="nav-button" href="{% url 'books' page|add:1%}" style="position: absolute;top: 0px;right: 0px;">&gt;</a>

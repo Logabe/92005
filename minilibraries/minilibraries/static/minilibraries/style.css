@@ -137,7 +137,7 @@ footer #copyright {
 /* Books Page */
 #books-container {
     display: grid;
-    grid-template-columns: 200px 200px 200px 200px;
+    grid-template-columns: repeat(4, 200px);
     grid-template-rows: repeat(auto-fill, 200px);
     column-gap: 40px;
 
@@ -163,7 +163,8 @@ footer #copyright {
 
 #nav {
     height: 30px;
-    width: 920px;
+    max-width: 920px;
+    width: 60%;
     position: relative;
 }
 
@@ -178,14 +179,32 @@ footer #copyright {
     border-radius: 2px;
 }
 
-.left-panel {
-    position: absolute;
-    height: 50%;
+#search-panel {
+    position: relative;
+    height: 100%;
+
     width: 15em;
     border: 2px solid #333333;
     border-radius: 10px;
     padding: 8px;
     background-color: #ebebeb;
+    box-sizing: border-box;
+}
+
+@media (max-width: 800px) {
+    #books-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    #search-panel {
+        width: 100% !important;
+    }
+}
+
+@media (min-width: 800px) {
+    #search-panel {
+        float:left !important;
+    }
 }
 
 /* Book Details */
