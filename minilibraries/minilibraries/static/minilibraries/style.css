@@ -208,8 +208,7 @@ footer #copyright {
 }
 
 /* Book Details */
-.left-pane {
-    float:left;
+#left-pane {
     margin-left: 20px;
     margin-right: 20px;
     width: 250px;
@@ -217,7 +216,13 @@ footer #copyright {
     text-align: center;
 }
 
-.left-pane img {
+@media (min-width: 800px) {
+    #left-pane {
+        float:left;
+    }
+}
+
+#left-pane img {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -227,7 +232,7 @@ footer #copyright {
     max-height: 400px;
 }
 
-.left-pane .button{
+#left-pane .button{
     width: 75%;
     padding: 0.3em;
     margin-bottom: 0.45em;
