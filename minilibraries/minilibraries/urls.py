@@ -1,5 +1,5 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from django.conf.urls import handler404
 from . import views
 
 urlpatterns = [

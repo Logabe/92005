@@ -27,7 +27,6 @@ def index(request):
 
 @login_required
 def home(request: HttpRequest):
-    user_libraries = Library.objects.filter(members=request.user)
     five_days = datetime.now() - timedelta(days=3)
     context = {
         "name": request.user.username,
