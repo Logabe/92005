@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.http.response import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.http.request import HttpRequest
-from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
+from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout, forms
 from django.contrib.auth.models import User
-from .forms import LoginForm, RegisterForm
+from .forms import RegisterForm
 
 # Create your views here.
 def register(request):
@@ -26,7 +26,7 @@ def register(request):
 
 def login(request: HttpRequest):
     if request.method == "POST":
-        form = LoginForm(request.POST)
+        form = forms.AuthenticationForm(data=request.POST)
         if form.is_valid():
             user = authenticate(username=form.cleaned_data.get("username"), password=form.cleaned_data.get("password"))
             if user is not None:
