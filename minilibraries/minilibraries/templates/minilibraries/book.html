@@ -41,7 +41,22 @@
 </div>
 <span>{{owner}}'s copy of</span>
 <h1>{{title}}</h1>
+{% if req.subtitle %}<h2 class="subtitle">{{req.subtitle}}</h2>{% endif %}
+<span>By <strong>{{author}}</strong></span>
 <p>{{desc}}</p>
+
+<h3>Additional Info</h3>
+<table>
+    {%if work.created %} <tr><td>First publised</td> <td>{{work.created.value}}</td></tr>{% endif %}
+    {%if req.number_of_pages %} <tr><td>Page count</td> <td>{{req.number_of_pages}}</td></tr>{% endif %}
+    {% if work.subjects %}
+    <tr><td>Subjects</td><td>
+        <ul>
+        {%for subject in work.subjects|slice:":10" %} <li>{{subject}}</li>{% endfor %}
+        </ul></td>
+    </tr>
+    {% endif %}
+</table>
 
 <script>
     var formData = new FormData();

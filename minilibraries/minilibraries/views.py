@@ -53,12 +53,16 @@ def book(request: HttpRequest, book_id):
 
         work = requests.get(f'http://openlibrary.org{work_id}.json').json()
         desc = work.get("description")
+
+        author_id = work["authors"][0]["author"]["key"]
+        author = requests.get(f'http://openlibrary.org{author_id}.json').json()["name"]
         # Sometimes, OL will return a dictionary instead of a string...
         if type(desc) is dict:
             desc = desc.get('value')
 
         context = {
             "title": book.title,
+            "author": author,
             "isbn": book.isbn,
             "owner": book.owner,
             "id": book_id,
@@ -67,7 +71,9 @@ def book(request: HttpRequest, book_id):
             "book_request": get_or_none(Request, book_id=book_id, user=request.user),
             "request_count": Request.objects.filter(book=book).exclude(user=request.user).count(),
             "taken_out": book.owner,
-            "is_owner": book.owner == request.user
+            "is_owner": book.owner == request.user,
+            "req": req,
+            "work": work,
         }
         return render(request, "minilibraries/book.html", context)
     else:

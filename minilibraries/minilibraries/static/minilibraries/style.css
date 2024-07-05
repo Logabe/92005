@@ -21,6 +21,21 @@ p {
     overflow-wrap: break-word;
 }
 
+tr {
+    border: 2px solid rgb(63, 63, 63);
+}
+
+th,
+td {
+  padding: 20px;
+}
+
+table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: 3px solid black;
+}
+
 header * {
     display: inline;
 }
@@ -212,7 +227,8 @@ footer #copyright {
     margin-left: 20px;
     margin-right: 20px;
     width: 250px;
-    height:420px;
+    min-height:420px;
+    height: 100%;
     text-align: center;
 }
 
@@ -236,4 +252,11 @@ footer #copyright {
     width: 75%;
     padding: 0.3em;
     margin-bottom: 0.45em;
+}
+
+.subtitle {
+    font-size: large;
+    font-style: italic;
+    color:#333333;
+    margin-top: 0;
 }
