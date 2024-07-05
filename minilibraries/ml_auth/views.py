@@ -3,13 +3,16 @@ from django.http.response import HttpResponse, HttpResponseRedirect, HttpRespons
 from django.http.request import HttpRequest
 from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout, forms
 from django.contrib.auth.models import User
-from .forms import RegisterForm
+from .forms import RegisterForm, LoginForm
 
 # Create your views here.
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
+            if User.objects.filter(username=form.cleaned_data.get("username")).exists():
+                return HttpResponseForbidden("Username already taken!")
+
             user = User.objects.create_user(form.cleaned_data.get("username"), form.cleaned_data.get("email"), form.cleaned_data.get("password"))
             user.first_name = form.cleaned_data.get("firstname")
             user.last_name = form.cleaned_data.get("lastname")
