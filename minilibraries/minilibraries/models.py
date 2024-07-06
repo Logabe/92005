@@ -10,12 +10,16 @@ class Library(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = "libraries"
+
+
 class Book(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owner')
     olid = models.CharField(max_length=20)
     isbn = models.CharField(max_length=13)
     title = models.CharField(max_length=200, null=True)
-    borrower = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, default=None, blank=True)
+    borrower = models.ForeignKey(User, on_delete=models.PROTECT, null=True, default=None, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
     last_returned = models.DateTimeField(default=datetime.now())
 
@@ -29,3 +33,8 @@ class Request(models.Model):
 
     def __str__(self):
         return self.user.username + " requests " + self.book.title
+
+class Invite(models.Model):
+    library = models.ForeignKey(Library, on_delete=models.CASCADE)
+    key = models.CharField(max_length=30, primary_key=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)

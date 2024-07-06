@@ -13,5 +13,6 @@ urlpatterns = [
     path("book/<int:book_id>/request", views.request_book, name="request_book"),
     path("book/<int:book_id>/return", views.return_book, name="return_book"),
     path("fulfill_request", views.fulfill_request, name="fulfill_request"),
-    path("cancel_request", views.cancel_request, name="cancel_request")
+    path("cancel_request", views.cancel_request, name="cancel_request"),
+    path("join/<slug:code>", views.join, name="join")
 ]

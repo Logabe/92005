@@ -3,7 +3,7 @@ import threading
 
 from django.shortcuts import render
 from django.http import HttpRequest
-from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse, HttpResponseNotFound, HttpResponseServerError
+from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -12,7 +12,7 @@ from django.template import Context
 from django.template.engine import Engine
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
-from .models import Library, Book, Request
+from .models import Library, Book, Request, Invite
 from .forms import RegisterBookForm
 from .utils import get_or_none, related_books
 import requests
@@ -134,7 +134,6 @@ def register_book(request: HttpRequest):
         return HttpResponseServerError("Could not register book")
 
 
-
 @require_POST
 @login_required
 def delete_book(request: HttpRequest, book_id):
@@ -210,3 +209,17 @@ def cancel_request(request: HttpRequest):
         book_request.delete()
         return HttpResponse("Canceled successfully")
     return HttpResponseForbidden("Request doesn't exist")
+
+@login_required()
+def join(request: HttpRequest, code):
+    try:
+        invite = Invite.objects.get(pk=code)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound("Invitation does not exist!")
+
+    if request.method == "POST":
+        invite.library.members.add(request.user)
+        invite.library.save()
+        return HttpResponseRedirect("/home")
+    else:
+        return render(request, "minilibraries/join.html", {"invite": invite})

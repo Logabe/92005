@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Book, Library, Request
+from .models import Book, Library, Request, Invite
 
 class BookAdmin(admin.ModelAdmin):
     list_display = ["title", "borrower", "owner"]
@@ -13,3 +13,4 @@ class RequestAdmin(admin.ModelAdmin):
 admin.site.register(Book, BookAdmin)
 admin.site.register(Library)
 admin.site.register(Request, RequestAdmin)
+admin.site.register(Invite)
