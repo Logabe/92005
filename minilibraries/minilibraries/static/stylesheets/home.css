@@ -1,19 +1,8 @@
-main {
-    background-image: url("/static/background.webp");
-}
-
 #grid {
     display: grid;
     grid-template-columns: minmax(20%, 200px) repeat(2, 1fr);
     gap: 10px;
     grid-auto-rows: minmax(100px, auto);
-}
-
-.card {
-    border: 2px solid black;
-    border-radius: 10px;
-    padding: 5px;
-    background-color: white;
 }
 
 .card-title {

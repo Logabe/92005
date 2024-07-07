@@ -1,8 +1,15 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block headers %}
+<link rel="stylesheet" href="{% static 'stylesheets/background.css' %}">
+{% endblock %}
+
 {% block content %}
 <div style="display:flex;justify-content:center;align-items:center;">
-    <div style="width:35empx; height:10em; border:2px black solid; padding:0.5em; border-radius:10px;">
-        <strong>{{invite.creator}}</strong> has invited you to <strong>{{invite.library}}</strong><br>
+    <div class="card center-card">
+        <strong>{{invite.creator}}</strong> has invited you to<br>
+        <h2>{{invite.library}}<h2>
         <button id="acc">Accept</button>
         <button id="dec">Decline</button>
     </div>

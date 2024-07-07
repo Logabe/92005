@@ -1,8 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Log In{% endblock %}
+{% load static %}
+{% block title %}Register{% endblock %}
+{% block headers %}
+<link rel="stylesheet" href="{% static 'stylesheets/background.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container" style="width: 600px; margin:auto;">
+<div class="card center-card" style="margin:auto;">
     <h2 style="text-align: center">Register</h2>
     <form action="/auth/register/" method="post" class="form">
         {% csrf_token %}
