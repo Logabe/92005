@@ -3,14 +3,13 @@ import threading
 
 from django.shortcuts import render
 from django.http import HttpRequest
-from django.http.response import JsonResponse, HttpResponseForbidden, HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
+from django.http.response import HttpResponseForbidden, HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseRedirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.template import Context
 from django.template.engine import Engine
-from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from .models import Library, Book, Request, Invite
 from .forms import RegisterBookForm
@@ -129,7 +128,7 @@ def register_book(request: HttpRequest):
 
         book = Book(owner = request.user, olid=olid, title=title, isbn = isbn, date_added=date)
         book.save()
-        return JsonResponse(serializers.serialize('json', [book]), safe=False)
+        return HttpResponse("Registered "+ book.title)
     except Exception as e:
         return HttpResponseServerError("Could not register book")
 
