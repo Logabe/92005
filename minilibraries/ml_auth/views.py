@@ -34,7 +34,7 @@ def login(request: HttpRequest):
             user = authenticate(username=form.cleaned_data.get("username"), password=form.cleaned_data.get("password"))
             if user is not None:
                 dj_login(request, user)
-            return HttpResponseRedirect("/home")
+            return HttpResponseRedirect(request.POST.get('next', default="/home"))
         else:
             return HttpResponseForbidden("Could not log you in")
 

@@ -10,6 +10,7 @@
 <div class="card center-card" style="margin:auto;">
     <h2 style="text-align: center">Log In</h2>
     <form action="/auth/login/" method="post" class="form">
+        <input type="hidden" name="next" value="{{ request.GET.next }}"/>
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Submit">
