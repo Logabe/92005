@@ -34,7 +34,7 @@ def home(request: HttpRequest):
         "taken_out": Book.objects.filter(borrower=request.user),
         "taken_out_count": Book.objects.filter(borrower=request.user).count(),
         "user_registered": Book.objects.filter(owner=request.user).count(),
-        "newly_added": related_books(request.user).order_by('date_added')[:15],
+        "newly_added": related_books(request.user).order_by('-date_added')[:15],
         "new_returns": related_books(request.user).filter(last_returned__gte=five_days).order_by('-last_returned')[:15],
     }
     return render(request, "minilibraries/home.html", context)

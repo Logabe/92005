@@ -17,7 +17,6 @@
 .book-list {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     overflow-x: auto;
     gap: 10px;
 }
@@ -33,4 +32,8 @@
     margin: auto;
     display: block;
     height: 70px;
+}
+
+.list-wrap {
+    flex-wrap: wrap;
 }
