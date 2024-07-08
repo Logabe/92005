@@ -118,9 +118,12 @@ def books_page(request: HttpRequest, page: int):
 @require_POST
 @login_required
 def register_book(request: HttpRequest):
+    isbn = request.POST["isbn"]
+
     try:
-        isbn = request.POST["isbn"]
         r = requests.get(f'http://openlibrary.org/api/volumes/brief/isbn/{isbn}.json')
+        if len(r.text) <= 2:
+            return HttpResponseServerError("Couldn't load data for this book. This might be because the ISBN you inputted is incorrect, or it might be that Open Library doesn't have any records of your book.")
         book_data = r.json()["records"][list(r.json()["records"])[0]]
         olid = book_data["olids"][0]
         title = book_data["data"]["title"]
@@ -130,7 +133,7 @@ def register_book(request: HttpRequest):
         book.save()
         return HttpResponse("Registered "+ book.title)
     except Exception as e:
-        return HttpResponseServerError("Could not register book")
+        return HttpResponseServerError("Internal error: Could not register book")
 
 
 @require_POST
