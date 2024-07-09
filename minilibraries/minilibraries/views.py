@@ -140,7 +140,11 @@ def register_book(request: HttpRequest):
 @require_POST
 @login_required
 def delete_book(request: HttpRequest, book_id):
-    book = Book.objects.get(id=book_id)
+    try:
+        book = Book.objects.get(id=book_id)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound("Already deleted")
+
     if book.owner.pk == request.user.id:
         book.delete()
         return HttpResponse("Delete successful")
