@@ -54,6 +54,21 @@
     </div>
 
     <div class="card" style="grid-column: 1/4; grid-row: 3;">
+        <h3 class="card-title">On Loan</h3>
+        <ul class="book-list">
+            {% for book in on_loan %}
+            <div class="little-book">
+                <div class="book">
+                    <i>On loan to <strong>{{book.borrower}}</strong></i>
+                    <img src="https://covers.openlibrary.org/b/olid/{{book.olid}}-S.jpg" loading="lazy">
+                    <a href="{% url 'book' book.id %}" target="_blank" class="book-title {% if book.borrower %}taken{% endif %}">{{book.title}}</a>
+                </div>
+            </div>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="card" style="grid-column: 1/4; grid-row: 4;">
         <h3 class="card-title">Recently returned</h3>
         <ul class="book-list">
             {%for book in new_returns %}
@@ -67,7 +82,7 @@
             </ul>
     </div>
 
-    <div class="card" style="grid-column: 1/4; grid-row: 4;">
+    <div class="card" style="grid-column: 1/4; grid-row: 5;">
         <h3 class="card-title">Recently added</h3>
         <div class="book-list">
         {%for book in newly_added %}
