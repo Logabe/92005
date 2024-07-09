@@ -3,9 +3,7 @@
 {% block content %}
 <div id="left-pane">
     <img src="https://covers.openlibrary.org/b/isbn/{{isbn}}-M.jpg">
-    {% if has_book %}
-    <button onclick="sendReq(&quot;{% url 'return_book' id %}&quot;)" class="button">Return Book</button>
-    {% else %}
+    {% if not has_book %}
     {% if not book_request %}
     <button onclick="sendReq(&quot;{% url 'request_book' id %}&quot;)" class="button">Request Book</button>
     {% else %}
@@ -24,10 +22,15 @@
     {{request_count}} request(s)
     {% endif %}
     {% if is_owner %}
+
+    <button onclick="returnBook()" class="button">Return Book</button>
     <button onclick="deleteBook()" class="button">Delete Book</button>
     <script>
-        function closeNow() {
-            window.close();
+        function returnBook() {
+            if (!confirm("Are you sture you want to mark this book as returned?")) {
+                return;
+            }
+            sendReq("{% url 'return_book' id %}");
         }
         function deleteBook() {
             if (!confirm("Delete this book?")) {

@@ -180,7 +180,7 @@ def request_book(request: HttpRequest, book_id):
 @login_required
 def return_book(request: HttpRequest, book_id):
     book = Book.objects.get(id=book_id)
-    if book.borrower.pk == request.user.id:
+    if book.owner.pk == request.user.id:
         book.borrower = None
         book.last_returned = datetime.now()
         book.save()

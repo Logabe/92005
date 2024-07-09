@@ -58,10 +58,11 @@
         <ul class="book-list">
             {% for book in on_loan %}
             <div class="little-book">
-                <div class="book">
+                <div class="book" id="loan_{{book.pk}}">
                     <i>On loan to <strong>{{book.borrower}}</strong></i>
                     <img src="https://covers.openlibrary.org/b/olid/{{book.olid}}-S.jpg" loading="lazy">
-                    <a href="{% url 'book' book.id %}" target="_blank" class="book-title {% if book.borrower %}taken{% endif %}">{{book.title}}</a>
+                    <a href="{% url 'book' book.id %}" target="_blank">{{book.title}}</a><br>
+                    <button onclick="returnBook({{book.pk}})" >Returned?</button>
                 </div>
             </div>
             {% endfor %}
@@ -110,6 +111,25 @@
         req.onload = function() {
             if (req.status === 200) {
                 var item = document.getElementById(request_id);
+                item.remove()
+            }
+        }
+        req.send(formData);
+    }
+
+    function returnBook(book) {
+        if(!confirm("Are you sure you want to mark this book as returned?")) {
+            return;
+        }
+        // Construct a FormData instance
+        const formData = new FormData();
+        formData.append("csrfmiddlewaretoken", "{{ csrf_token }}")
+
+        const req = new XMLHttpRequest();
+        req.open("POST", "/book/" + book + "/return");
+        req.onload = function() {
+            if (req.status === 200) {
+                var item = document.getElementById("loan_" + book);
                 item.remove()
             }
         }
