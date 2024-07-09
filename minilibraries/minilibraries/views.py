@@ -157,9 +157,8 @@ alternative_email = Engine.get_default().get_template(template_name="minilibrari
 @require_POST
 @login_required
 def request_book(request: HttpRequest, book_id):
-    def email(user, template, book: Book):
+    def email(user, template, book: Book, request: Request):
         borrower = book.borrower.get_full_name() if book.borrower else Request.objects.filter(book=book).latest('-date').user.get_full_name()
-        print(borrower)
         context = Context({"user": user, "book": book, "borrower": borrower})
         book.owner.email_user("Request for " + book.title, template.render(context=context), "logangbentley@gmail.com")
 
@@ -170,9 +169,10 @@ def request_book(request: HttpRequest, book_id):
                 return HttpResponseForbidden("Already requested/borrowed")
             else:
                 template = alternative_email if book.borrower or Request.objects.filter(book=book).count() >= 1 else email_template
-                email_thread = threading.Thread(target=email, name="Email Thread", args=(request.user, template, book))
+                request = Request(user = request.user, book = book, date=datetime.now())
+                email_thread = threading.Thread(target=email, name="Email Thread", args=(request.user, template, book, request))
                 email_thread.start()
-                Request(user = request.user, book = book, date=datetime.now()).save()
+                request.save()
                 return HttpResponse("Request successful")
         else:
             return HttpResponseForbidden(f"Too many books/requests out (limit: {settings.BORROW_LIMIT})")
