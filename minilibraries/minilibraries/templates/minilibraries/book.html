@@ -22,8 +22,9 @@
     {{request_count}} request(s)
     {% endif %}
     {% if is_owner %}
-
+    {% if book.borrower %}
     <button onclick="returnBook()" class="button">Return Book</button>
+    {% endif %}
     <button onclick="deleteBook()" class="button">Delete Book</button>
     <script>
         function returnBook() {
