@@ -70,7 +70,7 @@ def book(request: HttpRequest, book_id):
             "has_book": book.borrower == request.user,
             "book_request": get_or_none(Request, book_id=book_id, user=request.user),
             "request_count": Request.objects.filter(book=book).exclude(user=request.user).count(),
-            "taken_out": book.owner,
+            "on_loan": book.borrower != None,
             "is_owner": book.owner == request.user,
             "req": req,
             "work": work,
@@ -157,11 +157,10 @@ alternative_email = Engine.get_default().get_template(template_name="minilibrari
 @require_POST
 @login_required
 def request_book(request: HttpRequest, book_id):
-    def email(user, book: Book):
+    def email(user, template, book: Book):
         borrower = book.borrower.get_full_name() if book.borrower else Request.objects.filter(book=book).latest('-date').user.get_full_name()
         print(borrower)
         context = Context({"user": user, "book": book, "borrower": borrower})
-        template = alternative_email if book.borrower or Request.objects.filter(book=book).count() >= 1 else email_template
         book.owner.email_user("Request for " + book.title, template.render(context=context), "logangbentley@gmail.com")
 
     book = Book.objects.get(id=book_id)
@@ -170,9 +169,10 @@ def request_book(request: HttpRequest, book_id):
             if get_or_none(Request, user=request.user, book=book) or book.borrower == request.user:
                 return HttpResponseForbidden("Already requested/borrowed")
             else:
-                Request(user = request.user, book = book, date=datetime.now()).save()
-                email_thread = threading.Thread(target=email, name="Email Thread", args=(request.user, book))
+                template = alternative_email if book.borrower or Request.objects.filter(book=book).count() >= 1 else email_template
+                email_thread = threading.Thread(target=email, name="Email Thread", args=(request.user, template, book))
                 email_thread.start()
+                Request(user = request.user, book = book, date=datetime.now()).save()
                 return HttpResponse("Request successful")
         else:
             return HttpResponseForbidden(f"Too many books/requests out (limit: {settings.BORROW_LIMIT})")
