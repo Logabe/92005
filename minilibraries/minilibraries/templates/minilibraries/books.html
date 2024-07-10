@@ -24,7 +24,7 @@
 <div class="page-center">
     <h2>Books</h2>
     <button id="reg-button">Register Book</button>
-    <div id="nav">
+    <div class="nav">
         {% if page > 0 %}
         <a class="nav-button" href="{% url 'books' page|add:"-1" %}" style="margin-right: 50%;">&lt;</a>
         {% endif %}
@@ -39,6 +39,14 @@
                 <a href="{% url 'book' book.id %}" target="_blank" class="book-title {% if book.borrower %}taken{% endif %}">{{book.title}}</a>
             </div>
         {% endfor %}
+    </div>
+    <div class="nav">
+        {% if page > 0 %}
+        <a class="nav-button" href="{% url 'books' page|add:"-1" %}" style="margin-right: 50%;">&lt;</a>
+        {% endif %}
+        {% if is_more %}
+        <a class="nav-button" href="{% url 'books' page|add:1%}" style="position: absolute;top: 0px;right: 0px;">&gt;</a>
+        {% endif %}
     </div>
 </div>
 <dialog id="reg-modal">

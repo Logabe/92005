@@ -128,7 +128,7 @@ footer #copyright {
     display: block;
 }
 
-#nav {
+.nav {
     height: 30px;
     max-width: 920px;
     width: 60%;
