@@ -124,7 +124,7 @@ def register_book(request: HttpRequest):
     try:
         r = requests.get(f'http://openlibrary.org/api/volumes/brief/isbn/{isbn}.json')
         if len(r.text) <= 2:
-            return HttpResponseServerError("Couldn't load data for this book. This might be because the ISBN you inputted is incorrect, or it might be that Open Library doesn't have any records of your book.")
+            return HttpResponse("Couldn't load data for this book. This might be because the ISBN you inputted is incorrect, or it might be that Open Library doesn't have any records of your book.")
         book_data = r.json()["records"][list(r.json()["records"])[0]]
         olid = book_data["olids"][0]
         title = book_data["data"]["title"]
