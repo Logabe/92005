@@ -77,8 +77,11 @@
         e.preventDefault();
         let formData = new FormData(document.forms['reg']);
         let isbn = formData.get('isbn');
-        let validated = isbn.replaceAll(validation, "")
-        console.log(validated);
+        let validated = isbn.replaceAll(validation, "");
+        if(validated.length != 10 || validated.length != 13) {
+            alert("Your ISBN is the wrong length. Please double-check that you've typed it in correctly. ISBNs should have a length of 10 or 13 characters.");
+            return;
+        }
         formData.set('isbn', validated);
 
         const context = {method: "POST", body: formData};
