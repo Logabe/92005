@@ -6,15 +6,15 @@
 <div id="search-panel">
     <h3>Search Filters</h3>
     <form>
-        <input type="search" name="search" placeholder="Title"></input><br>
+        <input type="search" name="search" placeholder="Title" {% if request.GET.search %}value="{{request.GET.search}}"{% endif %}></input><br>
         <label for="order">Order</label>
         <select name="order">
-            <option value="" selected disabled hidden>Choose here</option>
-            <option value="recent">Date added (recent first)</option>
-            <option value="old">Date added (old first)</option>
-            <option value="AtoZ">Alphabetical (Ascending)</option>
-            <option value="ZtoA">Alphabetical (Descending)</option>
-            <option value="rand">Random</option>
+            <option value="" {% if not request.GET.order %}selected {% endif %} disabled hidden>Choose here</option>
+            <option {% if request.GET.order == "recent" %}selected {% endif %}value="recent">Date added (recent first)</option>
+            <option {% if request.GET.order == "old" %}selected {% endif %}value="old">Date added (old first)</option>
+            <option {% if request.GET.order == "AtoZ" %}selected {% endif %}value="AtoZ">Alphabetical (Ascending)</option>
+            <option {% if request.GET.order == "ZtoA" %}selected {% endif %}value="ZtoA">Alphabetical (Descending)</option>
+            <option {% if request.GET.order == "rand" %}selected {% endif %}value="rand">Random</option>
         </select><br>
 
         <input type="submit" value="Search"></input>
