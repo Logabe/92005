@@ -99,14 +99,12 @@ def books_page(request: HttpRequest, page: int):
             books = books.order_by('-date_added')
         case 'old':
             books = books.order_by('date_added')
-        case 'AtoZ':
-            books = books.order_by('title')
         case 'ZtoA':
             books = books.order_by('-title')
         case 'rand':
             books = books.order_by('?')
         case _:
-            pass
+            books = books.order_by('title')
 
     context = {
         "form": form,
