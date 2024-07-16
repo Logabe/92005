@@ -199,7 +199,7 @@ def fulfill_request(request: HttpRequest):
         return HttpResponseForbidden("Not the first request ")
 
     if request.user.id == book.owner.id:
-        book.borrower = request.user
+        book.borrower = book_request.user
         book.save()
         book_request.delete()
         return HttpResponse("does anyone even read these")
