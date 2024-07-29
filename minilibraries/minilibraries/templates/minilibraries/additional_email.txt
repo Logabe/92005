@@ -3,4 +3,4 @@ Hello {{book.owner.first_name}},
 This book has already been borrowed/requested by {{borrower}}. Once {{borrower}} returns the book, you can mark it as returned and give it to {{user.first_name}}.
 {{user.first_name}}'s email is: {{user.email}}
 
-(This is a bit of a weird system, but bear with me)
+Once {{user.first_name}} has received the book, please mark it as being borrowed!

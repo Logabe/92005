@@ -1,3 +1,4 @@
 Hello {{book.owner.first_name}},
 {{user.get_full_name}} ({{user.get_username}}) has requested your copy of {{book.title|safe}}
 Their email is: {{user.email}}
+Once {{user.first_name}} has received the book, please mark it as being borrowed!
