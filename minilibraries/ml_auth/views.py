@@ -34,13 +34,16 @@ def login(request: HttpRequest):
             user = authenticate(username=form.cleaned_data.get("username"), password=form.cleaned_data.get("password"))
             if user is not None:
                 dj_login(request, user)
-                return HttpResponseRedirect(request.POST.get('next', default="/home"))
+                next = request.POST.get('next', default='')
+                if next == "":
+                    return HttpResponseRedirect("/home")
+                else:
+                    return HttpResponseRedirect(next)
 
         return HttpResponseForbidden("Could not log you in")
-
-
-    form = forms.AuthenticationForm()
-    return render(request, "auth/login.html", {"form": form})
+    else:
+        form = forms.AuthenticationForm()
+        return render(request, "auth/login.html", {"form": form})
 
 def logout(request: HttpRequest):
     dj_logout(request)
