@@ -15,6 +15,8 @@ from .models import Library, Book, Request, Invite
 from .forms import RegisterBookForm
 from .utils import get_or_none, related_books
 import requests
+import mistune
+import bleach
 
 def index(request):
     context = {
@@ -59,6 +61,10 @@ def book(request: HttpRequest, book_id):
         # Sometimes, OL will return a dictionary instead of a string...
         if type(desc) is dict:
             desc = desc.get('value')
+
+        if desc:
+            desc = mistune.html(desc)
+            desc = bleach.clean(desc, tags=['p', 'a', 'br', 'hr', 'ul', 'li'])
 
         context = {
             "title": book.title,

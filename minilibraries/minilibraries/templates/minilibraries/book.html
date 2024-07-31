@@ -47,8 +47,9 @@
 <h1>{{title}}</h1>
 {% if req.subtitle %}<h2 class="subtitle">{{req.subtitle}}</h2>{% endif %}
 <span>By <strong>{{author}}</strong></span>
+{% autoescape off %}
 <p>{{desc}}</p>
-
+{% endautoescape %}
 <h3>Additional Info</h3>
 <table>
     {%if work.created %} <tr><td>First publised</td> <td>{{work.created.value}}</td></tr>{% endif %}
