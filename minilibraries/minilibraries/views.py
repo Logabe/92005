@@ -25,6 +25,7 @@ def index(request):
     }
     return render(request, "minilibraries/index.html", context)
 
+
 # The main 'home' page, which shows a bunch of cool stuff for the user including...
 @login_required
 def home(request: HttpRequest):
@@ -43,13 +44,17 @@ def home(request: HttpRequest):
     }
     return render(request, "minilibraries/home.html", context)
 
+
+# An individual book's page
 @login_required
 def book(request: HttpRequest, book_id):
+    # Return a 404 error if the books does not exist
     try:
         book = Book.objects.get(id=book_id)
     except ObjectDoesNotExist:
         return HttpResponseNotFound("This book does not exist!")
 
+    # Check that the user should be able to view this page's book
     if related_books(request.user).contains(book):
         req = requests.get(f'http://openlibrary.org/books/{book.olid}.json').json()
         work_id = req["works"][0]["key"]
@@ -86,6 +91,8 @@ def book(request: HttpRequest, book_id):
 def books(request: HttpRequest):
     return books_page(request, 0)
 
+
+# The book gallery view
 @login_required
 @require_GET
 def books_page(request: HttpRequest, page: int):
@@ -117,6 +124,8 @@ def books_page(request: HttpRequest, page: int):
     }
     return render(request, "minilibraries/books.html", context)
 
+
+# The API endpoint for registering a book - should not be used by the user
 @require_POST
 @login_required
 def register_book(request: HttpRequest):
@@ -133,11 +142,12 @@ def register_book(request: HttpRequest):
 
         book = Book(owner = request.user, olid=olid, title=title, isbn = isbn, date_added=date)
         book.save()
-        return HttpResponse("Registered "+ book.title)
+        return HttpResponse("Registered "+ book.title) # Return a message to the user
     except Exception as e:
         return HttpResponseServerError("Internal error: Could not register book")
 
 
+# API endpoint for deleting a book
 @require_POST
 @login_required
 def delete_book(request: HttpRequest, book_id):
@@ -152,23 +162,34 @@ def delete_book(request: HttpRequest, book_id):
     else:
         return HttpResponseForbidden()
 
-email_template = Engine.get_default().get_template(template_name="minilibraries/email.txt")
-alternative_email = Engine.get_default().get_template(template_name="minilibraries/additional_email.txt")
 
+email_template = Engine.get_default().get_template(template_name="minilibraries/email.txt") # The template to use if a book has no current requests
+alternative_email = Engine.get_default().get_template(template_name="minilibraries/additional_email.txt") # The template to use if a book has one or more current requests
+
+# The API endpoint for requesting a book
 @require_POST
 @login_required
 def request_book(request: HttpRequest, book_id):
+    # Send an email
     def email(user, template, book: Book, request: Request):
         borrower = book.borrower.get_full_name() if book.borrower else Request.objects.filter(book=book).latest('-date').user.get_full_name()
         context = Context({"user": user, "book": book, "borrower": borrower})
         book.owner.email_user("Request for " + book.title, template.render(context=context), "logangbentley@gmail.com")
 
-    book = Book.objects.get(id=book_id)
+    try:
+        book = Book.objects.get(id=book_id)
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound("This book does not exist!")
+
+    # Check the user can request this book
     if related_books(request.user).contains(book):
+        # Check that the user hasn't requested or borrowed too many books
         if Request.objects.filter(user=request.user).count() + Book.objects.filter(borrower=request.user).count() <= settings.BORROW_LIMIT:
+            # Check the user hasn't already made a request
             if get_or_none(Request, user=request.user, book=book) or book.borrower == request.user:
                 return HttpResponseForbidden("Already requested/borrowed")
             else:
+                # Email the user in the background
                 template = alternative_email if book.borrower or Request.objects.filter(book=book).count() >= 1 else email_template
                 request = Request(user = request.user, book = book, date=datetime.now())
                 email_thread = threading.Thread(target=email, name="Email Thread", args=(request.user, template, book, request))
@@ -181,6 +202,7 @@ def request_book(request: HttpRequest, book_id):
         return HttpResponseForbidden()
 
 
+# API endpoint for returning a book
 @require_POST
 @login_required
 def return_book(request: HttpRequest, book_id):
@@ -193,11 +215,14 @@ def return_book(request: HttpRequest, book_id):
     else:
         return HttpResponseForbidden()
 
+
+# API endpoint for marking a request as fulfilled
 @require_POST
 @login_required
 def fulfill_request(request: HttpRequest):
     book_request = Request.objects.get(pk=request.POST["request_id"])
     book = book_request.book
+    # The owner should not be allowed to fulfill a request that doesn't have priority
     if Request.objects.filter(book=book).latest('-date') != book_request:
         return HttpResponseForbidden("Not the first request ")
 
@@ -209,6 +234,8 @@ def fulfill_request(request: HttpRequest):
     else:
         return HttpResponseForbidden("Not the owner")
 
+
+# API endpoint for cancelling a request
 @require_POST
 @login_required
 def cancel_request(request: HttpRequest):
@@ -218,6 +245,8 @@ def cancel_request(request: HttpRequest):
         return HttpResponse("Canceled successfully")
     return HttpResponseForbidden("Request doesn't exist")
 
+
+# The join view - users can visit this to be added to a library
 @login_required()
 def join(request: HttpRequest, code):
     try:

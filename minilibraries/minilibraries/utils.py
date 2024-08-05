@@ -9,6 +9,8 @@ def get_or_none(classmodel, **kwargs):
     except classmodel.DoesNotExist:
         return None
 
+
+# All the books a user should have access to.
 def related_books(user: User) -> QuerySet:
     user_libraries = Library.objects.filter(members=user)
     related_users = User.objects.filter(memberships__in=user_libraries).distinct()
