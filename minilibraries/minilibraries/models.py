@@ -41,5 +41,5 @@ class Request(models.Model):
 # An invitation to a library
 class Invite(models.Model):
     library = models.ForeignKey(Library, on_delete=models.CASCADE) # The library in question
-    key = models.CharField(max_length=30, primary_key=True)        # (should be a different type)
+    key = models.SlugField(max_length=30, primary_key=True)        # (should be a different type)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)    # The user who created the invitation - if this user deletes their account, the invitation will disappear
