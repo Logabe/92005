@@ -45,4 +45,4 @@ class Invite(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)    # The user who created the invitation - if this user deletes their account, the invitation will disappear
 
     def __str__(self):
-        return self.key.__str__
+        return self.key
