@@ -16,6 +16,7 @@ from .forms import RegisterBookForm
 from .utils import get_or_none, related_books
 import requests
 
+# The index page shows a couple of stats for the website
 def index(request):
     context = {
         'user_count': User.objects.count(),
@@ -24,19 +25,21 @@ def index(request):
     }
     return render(request, "minilibraries/index.html", context)
 
+# The main 'home' page, which shows a bunch of cool stuff for the user including...
 @login_required
 def home(request: HttpRequest):
-    five_days = datetime.now() - timedelta(days=3)
+    week = datetime.now() - timedelta(days=7)
+    related = related_books(request.user)
     context = {
-        "name": request.user.username,
-        "libraries": request.user.memberships.all(),
-        "requested": Request.objects.filter(book__owner=request.user),
-        "taken_out": Book.objects.filter(borrower=request.user),
+        "name": request.user.first_name, # The user's name
+        "libraries": request.user.memberships.all(), # All the libraries the user is a part of
+        "requested": Request.objects.filter(book__owner=request.user), # All the books which other users have requested
+        "taken_out": Book.objects.filter(borrower=request.user), # The books the user has taken out
         "taken_out_count": Book.objects.filter(borrower=request.user).count(),
-        "on_loan": Book.objects.filter(owner=request.user, borrower__isnull=False),
-        "user_registered": Book.objects.filter(owner=request.user).count(),
-        "newly_added": related_books(request.user).order_by('-date_added')[:15],
-        "new_returns": related_books(request.user).filter(last_returned__gte=five_days).order_by('-last_returned')[:15],
+        "on_loan": Book.objects.filter(owner=request.user, borrower__isnull=False), # The books the user has loaned
+        "user_registered": Book.objects.filter(owner=request.user).count(), # The amount of books the user has registered
+        "newly_added": related.order_by('-date_added')[:15], # The 15 most recently registered books
+        "new_returns": related.filter(last_returned__gte=week).order_by('-last_returned')[:15], # Up to 15 books registered in the last week
     }
     return render(request, "minilibraries/home.html", context)
 
